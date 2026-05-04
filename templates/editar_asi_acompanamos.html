@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+<section class="gestion-donaciones-page acompanamos-admin-page">
+    <h1 class="gestion-donaciones-title">Editar publicación</h1>
+    <p class="gestion-auditoria-subtitle">Actualizá el contenido de la jornada y reemplazá la foto si hace falta.</p>
+
+    {% with mensajes = get_flashed_messages(with_categories=true) %}
+        {% if mensajes %}
+            {% for categoria, mensaje in mensajes %}
+                <p class="form-alert{% if categoria == 'success' %} form-alert-success{% elif categoria == 'info' %} form-alert-info{% endif %}">{{ mensaje }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="donacion-form-card acompanamos-admin-form-card">
+        <form method="POST" enctype="multipart/form-data">
+            <div class="gestion-filtros-grid acompanamos-admin-grid">
+                <div class="form-field">
+                    <label for="titulo">Título de la jornada</label>
+                    <input id="titulo" type="text" name="titulo" maxlength="120" value="{{ jornada.titulo }}" required>
+                </div>
+                <div class="form-field">
+                    <label for="fecha_jornada">Fecha de la jornada</label>
+                    <input id="fecha_jornada" type="date" name="fecha_jornada" value="{{ jornada.fecha_jornada }}" required>
+                </div>
+            </div>
+
+            <div class="form-field">
+                <label for="resumen">Resumen de lo realizado</label>
+                <textarea id="resumen" name="resumen" rows="4" maxlength="600" required>{{ jornada.resumen }}</textarea>
+            </div>
+
+            <div class="form-field">
+                <label for="foto_jornada">Reemplazar foto (opcional)</label>
+                <input id="foto_jornada" type="file" name="foto_jornada" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp">
+                <small class="usuarios-form-help">Si elegís una foto nueva, reemplaza la actual.</small>
+            </div>
+
+            {% if jornada.foto_url %}
+            <div class="form-field">
+                <p class="usuarios-form-help">Foto actual: <a href="{{ jornada.foto_url }}" target="_blank" rel="noopener">Ver foto</a></p>
+                <label>
+                    <input type="checkbox" name="quitar_foto" value="1">
+                    Quitar foto actual
+                </label>
+            </div>
+            {% endif %}
+
+            <div class="dashboard-actions">
+                <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                <a href="/autogestion/asi-acompanamos" class="btn btn-muted">Volver</a>
+            </div>
+        </form>
+    </div>
+</section>
+
+{% endblock %}

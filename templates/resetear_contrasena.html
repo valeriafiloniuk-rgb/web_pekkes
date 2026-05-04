@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+
+<div style="max-width: 400px; margin: 50px auto; padding: 30px; background-color: #f8f9fa; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+    
+    <h2 style="text-align: center; color: #333; margin-bottom: 10px;">🔐 Resetear contraseña</h2>
+    
+    <p style="text-align: center; color: #666; font-size: 14px; margin-bottom: 30px;">
+        Ingresa tu nueva contraseña
+    </p>
+    
+    {% if error %}
+    <div style="background-color: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px; margin-bottom: 20px; border-left: 4px solid #dc3545;">
+        <strong>❌ Error:</strong> {{ error }}
+    </div>
+    {% endif %}
+    
+    <form method="POST">
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; color: #333; font-weight: bold; margin-bottom: 8px;">Nueva contraseña:</label>
+            <input type="password" name="password" placeholder="Ingresa tu nueva contraseña" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px; box-sizing: border-box;">
+            <small style="display: block; color: #666; margin-top: 8px; font-size: 12px;">
+                📋 Requisitos:
+                <div style="margin-left: 10px;">
+                    • Mínimo 12 caracteres<br>
+                    • Al menos una mayúscula (A-Z)<br>
+                    • Al menos una minúscula (a-z)<br>
+                    • Al menos un número (0-9)<br>
+                    • Al menos un carácter especial (!@#$%^&*-_=+)
+                </div>
+            </small>
+        </div>
+
+        <button type="submit" style="width: 100%; padding: 12px; background-color: #007bff; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 16px;">
+            Actualizar contraseña
+        </button>
+    </form>
+
+    <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
+    
+    <div style="text-align: center;">
+        <a href="/login" style="color: #007bff; text-decoration: none; font-weight: bold;">
+            ← Volver al inicio de sesión
+        </a>
+    </div>
+
+</div>
+
+{% endblock %}

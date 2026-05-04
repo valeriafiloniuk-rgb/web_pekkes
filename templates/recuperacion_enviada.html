@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+<section class="donacion-form-page feedback-page">
+    <div class="donacion-form-card feedback-card gracias-card">
+        <div class="feedback-badge feedback-badge-success">Recuperacion iniciada</div>
+        <h1 class="donacion-page-title">Enlace de recuperacion enviado</h1>
+        <p class="donacion-page-subtitle">Se generó un enlace seguro para resetear tu contraseña.</p>
+
+        <div class="feedback-summary-box feedback-link-box">
+            <p class="feedback-meta">Tu enlace de recuperacion:</p>
+            <a href="{{ reset_link }}" class="btn btn-primary">Resetear contraseña</a>
+        </div>
+
+        <p class="feedback-support-text">Este enlace es valido por 30 minutos. Si no solicitaste esto, puedes ignorar este mensaje.</p>
+
+        <div class="dashboard-actions feedback-actions">
+            <a href="/login" class="btn btn-muted">Volver al inicio de sesion</a>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

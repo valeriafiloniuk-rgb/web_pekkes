@@ -1,0 +1,268 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+<section class="gestion-donaciones-page stock-page">
+    <h1 class="gestion-donaciones-title">Stock</h1>
+    <p class="gestion-auditoria-subtitle">Control de productos, cantidades y alertas de inventario.</p>
+
+    {% with mensajes = get_flashed_messages(with_categories=true) %}
+        {% if mensajes %}
+            <div class="stock-flash-wrap">
+            {% for categoria, mensaje in mensajes %}
+                <p class="form-alert{% if categoria == 'success' %} form-alert-success{% elif categoria == 'info' %} form-alert-info{% endif %}">{{ mensaje }}</p>
+            {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <div class="donacion-form-card gestion-filtros-card">
+        <div class="stock-filtros-header">
+            <form method="GET" action="/autogestion/stock" class="stock-filtros-form">
+                <div class="gestion-filtros-grid">
+                    <div class="form-field">
+                        <label for="q">Buscar producto</label>
+                        <input id="q" type="text" name="q" value="{{ filtros.q }}" placeholder="Ej: arroz, lentejas, salsa de tomate">
+                    </div>
+                    <div class="form-field">
+                        <label for="estado">Estado</label>
+                        <select id="estado" name="estado">
+                            <option value="" {% if not filtros.estado %}selected{% endif %}>Todos</option>
+                            <option value="disponible" {% if filtros.estado == 'disponible' %}selected{% endif %}>Disponible</option>
+                            <option value="bajo-stock" {% if filtros.estado == 'bajo-stock' %}selected{% endif %}>Bajo stock</option>
+                            <option value="sin-stock" {% if filtros.estado == 'sin-stock' %}selected{% endif %}>Sin stock</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="dashboard-actions gestion-filtros-actions">
+                    <button type="submit" class="btn btn-primary">Aplicar filtros</button>
+                    <a href="/autogestion/stock" class="btn btn-muted">Limpiar</a>
+                    <a href="/autogestion/stock/agregar" class="btn btn-primary stock-agregar-btn">➕ Agregar producto</a>
+                </div>
+            </form>
+        </div>
+        <p class="gestion-result-count">
+            {% if total_resultados > 0 %}
+                Mostrando {{ paginacion.inicio_resultado }}-{{ paginacion.fin_resultado }} de {{ total_resultados }} producto{% if total_resultados != 1 %}s{% endif %}
+            {% else %}
+                0 productos encontrados
+            {% endif %}
+        </p>
+    </div>
+
+    {% if items %}
+    <div class="gestion-table-wrap">
+        <table class="gestion-donaciones-table stock-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for item in items %}
+                <tr class="{% if item[2] == 0 %}stock-row-empty{% elif item[2] <= 5 %}stock-row-low{% endif %}">
+                    <td>{{ item[0] }}</td>
+                    <td>{{ item[1] }}</td>
+                    <td>{{ item[2] }}</td>
+                    <td>
+                        {% if item[2] == 0 %}
+                            <span class="stock-status stock-status-empty">Sin stock</span>
+                        {% elif item[2] <= 5 %}
+                            <span class="stock-status stock-status-low">Bajo stock</span>
+                        {% else %}
+                            <span class="stock-status stock-status-ok">Disponible</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="stock-action-group">
+                            <a href="/autogestion/stock/editar/{{ item[0] }}" class="stock-action-chip stock-action-chip-edit">Editar</a>
+                            {% if item[2] > 0 %}
+                                <a href="#" class="stock-action-chip stock-action-chip-use" onclick="showUseModal({{ item[0] }}, {{ item[1] | tojson | forceescape }}, {{ item[2] }}); return false;">Usar</a>
+                            {% else %}
+                                <span class="stock-action-chip stock-action-chip-disabled">Sin stock</span>
+                            {% endif %}
+                            <a href="#" class="stock-action-chip stock-action-chip-delete" onclick="showDeleteModal({{ item[0] }}, '{{ item[1] | replace("'", "\\'") }}'); return false;">Eliminar</a>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if paginacion.total_paginas > 1 %}
+    <nav class="gestion-pagination" aria-label="Paginacion de stock">
+        <div class="gestion-pagination-summary">
+            Página {{ paginacion.pagina_actual }} de {{ paginacion.total_paginas }}
+        </div>
+        <div class="gestion-pagination-links">
+            {% if paginacion.tiene_anterior %}
+                <a href="{{ paginacion.url_anterior }}" class="gestion-pagination-link">Anterior</a>
+            {% else %}
+                <span class="gestion-pagination-link gestion-pagination-link-disabled">Anterior</span>
+            {% endif %}
+
+            {% if paginacion.muestra_primera %}
+                <a href="{{ paginacion.url_primera }}" class="gestion-pagination-link">1</a>
+                <span class="gestion-pagination-ellipsis">…</span>
+            {% endif %}
+
+            {% for pagina in paginacion.urls_paginas %}
+                {% if pagina.actual %}
+                    <span class="gestion-pagination-link gestion-pagination-link-active">{{ pagina.numero }}</span>
+                {% else %}
+                    <a href="{{ pagina.url }}" class="gestion-pagination-link">{{ pagina.numero }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if paginacion.muestra_ultima %}
+                <span class="gestion-pagination-ellipsis">…</span>
+                <a href="{{ paginacion.url_ultima }}" class="gestion-pagination-link">{{ paginacion.total_paginas }}</a>
+            {% endif %}
+
+            {% if paginacion.tiene_siguiente %}
+                <a href="{{ paginacion.url_siguiente }}" class="gestion-pagination-link">Siguiente</a>
+            {% else %}
+                <span class="gestion-pagination-link gestion-pagination-link-disabled">Siguiente</span>
+            {% endif %}
+        </div>
+    </nav>
+    {% endif %}
+    {% else %}
+    <p class="gestion-empty">No hay productos cargados en stock.</p>
+    {% endif %}
+</section>
+
+<div id="deleteModal" class="gestion-modal-overlay" style="display: none;">
+    <div class="gestion-modal-card">
+        <p class="gestion-modal-text">Confirma la eliminacion del producto <strong>"<span id="productName"></span>"</strong>. Esta accion no se puede deshacer.</p>
+        <div class="dashboard-actions gestion-modal-actions">
+            <button onclick="confirmDelete()" class="btn btn-primary">Si, eliminar</button>
+            <button onclick="hideModal()" class="btn btn-muted">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<div id="useModal" class="gestion-modal-overlay" style="display: none;">
+    <div class="gestion-modal-card stock-use-modal-card">
+        <h3 class="gestion-modal-title">Descontar stock</h3>
+        <p class="gestion-modal-text stock-use-modal-text">Registrá cuántas unidades usadas querés descontar de <strong id="useProductName"></strong>.</p>
+        <div class="stock-use-summary">
+            <span class="stock-use-summary-label">Disponible</span>
+            <strong id="useStockAvailableText"></strong>
+        </div>
+        <p id="useStockError" class="form-alert stock-use-inline-error" style="display: none;"></p>
+        <form method="POST" action="/autogestion/stock/usar" id="useStockForm" class="stock-use-form">
+            <input type="hidden" name="id" id="useStockId">
+            <div class="form-field">
+                <label for="cantidad_usada">Cantidad usada</label>
+                <input id="cantidad_usada" type="number" name="cantidad_usada" min="1" max="999999" step="1" placeholder="Ej: 3" required>
+            </div>
+            <div class="dashboard-actions gestion-modal-actions">
+                <button type="submit" class="btn btn-primary" id="useStockSubmitButton">Confirmar descuento</button>
+                <button type="button" onclick="hideUseModal()" class="btn btn-muted">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+let deleteId;
+let useStockAvailable = 0;
+
+function showUseStockError(message) {
+    const errorBox = document.getElementById('useStockError');
+    errorBox.innerText = message;
+    errorBox.style.display = 'block';
+}
+
+function hideUseStockError() {
+    const errorBox = document.getElementById('useStockError');
+    errorBox.innerText = '';
+    errorBox.style.display = 'none';
+}
+
+function showDeleteModal(id, product) {
+    deleteId = id;
+    document.getElementById('productName').innerText = product;
+    document.getElementById('deleteModal').style.display = 'flex';
+}
+
+function confirmDelete() {
+    window.location.href = '/autogestion/stock/eliminar/' + deleteId;
+}
+
+function hideModal() {
+    document.getElementById('deleteModal').style.display = 'none';
+}
+
+function showUseModal(id, product, available) {
+    useStockAvailable = Number(available) || 0;
+    document.getElementById('useProductName').innerText = product;
+    document.getElementById('useStockId').value = id;
+    document.getElementById('useStockAvailableText').innerText = useStockAvailable + ' unidades';
+
+    const inputCantidad = document.getElementById('cantidad_usada');
+    const submitButton = document.getElementById('useStockSubmitButton');
+
+    inputCantidad.value = '';
+    inputCantidad.max = useStockAvailable;
+    hideUseStockError();
+
+    if (useStockAvailable < 1) {
+        inputCantidad.disabled = true;
+        submitButton.disabled = true;
+        showUseStockError('Este producto no tiene stock disponible para descontar.');
+    } else {
+        inputCantidad.disabled = false;
+        submitButton.disabled = false;
+    }
+
+    document.getElementById('useModal').style.display = 'flex';
+}
+
+function hideUseModal() {
+    hideUseStockError();
+    document.getElementById('useModal').style.display = 'none';
+}
+
+document.getElementById('useStockForm').addEventListener('submit', function(event) {
+    const cantidadStr = document.getElementById('cantidad_usada').value.trim();
+    
+    if (!cantidadStr) {
+        event.preventDefault();
+        showUseStockError('Ingresá la cantidad a descontar.');
+        return;
+    }
+
+    const cantidad = Number(cantidadStr);
+    if (!Number.isInteger(cantidad) || cantidad < 1 || cantidad > 999999) {
+        event.preventDefault();
+        showUseStockError('Ingresá una cantidad válida (entre 1 y 999999).');
+        return;
+    }
+    if (cantidad > useStockAvailable) {
+        event.preventDefault();
+        showUseStockError('La cantidad usada no puede superar el stock disponible.');
+        return;
+    }
+    hideUseStockError();
+});
+
+document.getElementById('deleteModal').addEventListener('click', function(event) {
+    if (event.target.id === 'deleteModal') {
+        hideModal();
+    }
+});
+
+document.getElementById('useModal').addEventListener('click', function(event) {
+    if (event.target.id === 'useModal') {
+        hideUseModal();
+    }
+});
+</script>
+
+{% endblock %}

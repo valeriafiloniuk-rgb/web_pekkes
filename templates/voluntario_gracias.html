@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+<section class="donacion-form-page">
+    <div class="donacion-form-card feedback-card gracias-card">
+        <div class="feedback-badge feedback-badge-success">Solicitud enviada</div>
+        <h1 class="donacion-page-title">Gracias por sumarte</h1>
+        <p class="donacion-page-subtitle">
+            {{ nombre }}, recibimos tu mensaje. Pronto nos vamos a contactar para contarte cómo podés acompañar la misión.
+        </p>
+
+        <div class="dashboard-actions">
+            <a href="/" class="btn btn-primary">Volver al inicio</a>
+            <a href="/voluntariado" class="btn btn-muted">Enviar otra solicitud</a>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

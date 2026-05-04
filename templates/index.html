@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block body_class %}home-page{% endblock %}
+
+{% block contenido_wrapper %}{% endblock %}
+
+{% block contenido %}
+{% endblock %}
+
+{% block hero %}
+<section class="hero">
+    <img src="{{ url_for('static', filename='mision_pekkes.png') }}" alt="Misión Los Pekkes" class="hero-logo">
+    <div class="hero-texto">
+        <p class="hero-subtitulo">Juntos construimos un futuro mejor para los más pequeños.</p>
+        <div class="hero-botones">
+            <a href="/donaciones" class="btn-hero">Quiero donar</a>
+            <a href="/voluntariado" class="btn-hero btn-hero-sec">Ser voluntario</a>
+        </div>
+    </div>
+</section>
+
+<!-- PILARES -->
+<section class="home-pilares">
+    <h2 class="home-seccion-titulo">¿Quiénes somos y qué hacemos?</h2>
+    <div class="home-pilares-grid">
+        <a href="/quienes-somos" class="home-pilar-card">
+            <div class="home-pilar-icono">&#128150;</div>
+            <h3>Quiénes somos</h3>
+            <p>Voluntarios comprometidos con el bienestar y el desarrollo de los niños de nuestra comunidad.</p>
+            <span class="home-pilar-link">Conocernos &rarr;</span>
+        </a>
+        <a href="/que-hacemos" class="home-pilar-card">
+            <div class="home-pilar-icono">&#127869;</div>
+            <h3>Qué hacemos</h3>
+            <p>Cada sábado compartimos presencia, escucha y acompañamiento real junto a los más pequeños.</p>
+            <span class="home-pilar-link">Ver más &rarr;</span>
+        </a>
+        <a href="/asi-acompanamos" class="home-pilar-card">
+            <div class="home-pilar-icono">&#128247;</div>
+            <h3>Así acompañamos</h3>
+            <p>Registramos cada jornada para que puedas ver de cerca el impacto de cada aporte.</p>
+            <span class="home-pilar-link">Ver jornadas &rarr;</span>
+        </a>
+    </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="home-cta">
+    <h2>Vos también podés ser parte</h2>
+    <p>Con tu donación o tu tiempo, hacés la diferencia en la vida de los más pequeños.</p>
+</section>
+{% endblock %}

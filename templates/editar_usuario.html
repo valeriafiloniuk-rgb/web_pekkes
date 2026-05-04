@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+<section class="donacion-form-page usuarios-form-page">
+    <h1 class="donacion-page-title">Editar usuario</h1>
+    <p class="donacion-page-subtitle">Actualiza datos y permisos de acceso.</p>
+
+    <div class="donacion-form-card">
+        {% if error %}
+        <p class="form-alert">{{ error }}</p>
+        {% endif %}
+
+        <form method="POST">
+            <p class="usuarios-id-badge">ID: {{ usuario[0] }}</p>
+
+            <div class="form-field">
+                <label for="usuario">Usuario</label>
+                <input id="usuario" type="text" name="usuario" value="{{ usuario[1] }}" required>
+            </div>
+
+            <div class="form-field">
+                <label for="email">Email</label>
+                <input id="email" type="email" name="email" value="{{ usuario[2] }}" required>
+            </div>
+
+            <div class="form-field">
+                <label for="password">Contraseña</label>
+                <input id="password" type="password" name="password" placeholder="Dejar vacío para no cambiar">
+                <small class="usuarios-form-help">Si ingresas una nueva: 12+ caracteres, mayúscula, minúscula, número y especial (!@#$%^&*-_=+).</small>
+            </div>
+
+            <div class="usuarios-checkbox-group">
+                <label class="usuarios-checkbox-field">
+                    <input type="checkbox" name="acceso_privado" {% if usuario[4] == 1 %}checked{% endif %}>
+                    Habilitar acceso a parte privada
+                </label>
+            </div>
+
+            <div class="usuarios-checkbox-group">
+                <label class="usuarios-checkbox-field">
+                    <input type="checkbox" name="es_admin" {% if usuario[5] == 1 %}checked{% endif %}>
+                    Rol administrador
+                </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary form-submit-btn">Guardar cambios</button>
+        </form>
+    </div>
+
+    <div class="dashboard-actions usuarios-form-actions">
+        <a href="/autogestion/usuarios" class="btn btn-muted">Volver</a>
+    </div>
+</section>
+
+{% endblock %}

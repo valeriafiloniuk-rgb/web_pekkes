@@ -1,0 +1,350 @@
+{% extends 'base.html' %}
+
+{% block contenido_wrapper %}
+<div class="contenido contenido-dashboard">
+
+<section class="gestion-donaciones-page dashboard-page">
+    <h1 class="gestion-donaciones-title dashboard-title">Dashboard</h1>
+    <p class="gestion-auditoria-subtitle">Resumen general de stock y donaciones del sistema.</p>
+
+    <div class="dashboard-filter-compact">
+        <form method="GET" action="/autogestion/dashboard" class="dashboard-filter-compact-form">
+            <input id="q" type="text" name="q" value="{{ filtros.q }}" placeholder="Buscar producto" aria-label="Buscar producto">
+            <select id="estado" name="estado" aria-label="Filtrar por estado">
+                <option value="" {% if not filtros.estado %}selected{% endif %}>Ambos</option>
+                <option value="sin-stock" {% if filtros.estado == 'sin-stock' %}selected{% endif %}>Sin stock</option>
+                <option value="bajo-stock" {% if filtros.estado == 'bajo-stock' %}selected{% endif %}>Bajo stock</option>
+            </select>
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+            <a href="/autogestion/dashboard" class="btn btn-muted">Limpiar</a>
+        </form>
+    </div>
+
+    <div class="dashboard-metrics">
+        <div class="metric-card metric-stock">
+            <div class="metric-label">STOCK TOTAL</div>
+            <div class="metric-value">{{ total_stock }}</div>
+            <div class="metric-help">Productos en inventario</div>
+        </div>
+
+        <div class="metric-card metric-donations">
+            <div class="metric-label">DONACIONES TOTALES</div>
+            <div class="metric-value">$ {{ "%.2f"|format(total_donaciones) }}</div>
+            <div class="metric-help">Monto total recaudado</div>
+        </div>
+    </div>
+
+    {% if sin_stock %}
+    <div class="dashboard-alert alert-danger">
+        <h3 class="alert-title">Productos sin stock</h3>
+        <table class="gestion-donaciones-table stock-table dashboard-table">
+            <colgroup>
+                <col style="width: 46%;">
+                <col style="width: 14%;">
+                <col style="width: 20%;">
+                <col style="width: 20%;">
+            </colgroup>
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in sin_stock %}
+                <tr>
+                    <td>{{ item[1] }}</td>
+                    <td class="qty-zero">0</td>
+                    <td><span class="stock-status stock-status-empty">Sin stock</span></td>
+                    <td>
+                        <a href="/autogestion/stock/editar/{{ item[0] }}" class="table-action action-danger">Reabastecer</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% if sin_paginacion.total_paginas > 1 %}
+        <nav class="gestion-pagination" aria-label="Paginación de productos sin stock">
+            <div class="gestion-pagination-summary">
+                Página {{ sin_paginacion.pagina_actual }} de {{ sin_paginacion.total_paginas }}
+            </div>
+            <div class="gestion-pagination-links">
+                {% if sin_paginacion.tiene_anterior %}
+                    <a href="{{ sin_paginacion.url_anterior }}" class="gestion-pagination-link">Anterior</a>
+                {% else %}
+                    <span class="gestion-pagination-link gestion-pagination-link-disabled">Anterior</span>
+                {% endif %}
+
+                {% if sin_paginacion.muestra_primera %}
+                    <a href="{{ sin_paginacion.url_primera }}" class="gestion-pagination-link">1</a>
+                    <span class="gestion-pagination-ellipsis">…</span>
+                {% endif %}
+
+                {% for pagina in sin_paginacion.urls_paginas %}
+                    {% if pagina.actual %}
+                        <span class="gestion-pagination-link gestion-pagination-link-active">{{ pagina.numero }}</span>
+                    {% else %}
+                        <a href="{{ pagina.url }}" class="gestion-pagination-link">{{ pagina.numero }}</a>
+                    {% endif %}
+                {% endfor %}
+
+                {% if sin_paginacion.muestra_ultima %}
+                    <span class="gestion-pagination-ellipsis">…</span>
+                    <a href="{{ sin_paginacion.url_ultima }}" class="gestion-pagination-link">{{ sin_paginacion.total_paginas }}</a>
+                {% endif %}
+
+                {% if sin_paginacion.tiene_siguiente %}
+                    <a href="{{ sin_paginacion.url_siguiente }}" class="gestion-pagination-link">Siguiente</a>
+                {% else %}
+                    <span class="gestion-pagination-link gestion-pagination-link-disabled">Siguiente</span>
+                {% endif %}
+            </div>
+        </nav>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% if bajo_stock %}
+    <div class="dashboard-alert alert-warning">
+        <h3 class="alert-title">Productos con bajo stock</h3>
+        <table class="gestion-donaciones-table stock-table dashboard-table">
+            <colgroup>
+                <col style="width: 46%;">
+                <col style="width: 14%;">
+                <col style="width: 20%;">
+                <col style="width: 20%;">
+            </colgroup>
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in bajo_stock %}
+                <tr>
+                    <td>{{ item[1] }}</td>
+                    <td class="qty-low">{{ item[2] }}</td>
+                    <td><span class="stock-status stock-status-low">Bajo stock</span></td>
+                    <td>
+                        <a href="/autogestion/stock/editar/{{ item[0] }}" class="table-action action-warning">Editar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% if bajo_paginacion.total_paginas > 1 %}
+        <nav class="gestion-pagination" aria-label="Paginación de productos con bajo stock">
+            <div class="gestion-pagination-summary">
+                Página {{ bajo_paginacion.pagina_actual }} de {{ bajo_paginacion.total_paginas }}
+            </div>
+            <div class="gestion-pagination-links">
+                {% if bajo_paginacion.tiene_anterior %}
+                    <a href="{{ bajo_paginacion.url_anterior }}" class="gestion-pagination-link">Anterior</a>
+                {% else %}
+                    <span class="gestion-pagination-link gestion-pagination-link-disabled">Anterior</span>
+                {% endif %}
+
+                {% if bajo_paginacion.muestra_primera %}
+                    <a href="{{ bajo_paginacion.url_primera }}" class="gestion-pagination-link">1</a>
+                    <span class="gestion-pagination-ellipsis">…</span>
+                {% endif %}
+
+                {% for pagina in bajo_paginacion.urls_paginas %}
+                    {% if pagina.actual %}
+                        <span class="gestion-pagination-link gestion-pagination-link-active">{{ pagina.numero }}</span>
+                    {% else %}
+                        <a href="{{ pagina.url }}" class="gestion-pagination-link">{{ pagina.numero }}</a>
+                    {% endif %}
+                {% endfor %}
+
+                {% if bajo_paginacion.muestra_ultima %}
+                    <span class="gestion-pagination-ellipsis">…</span>
+                    <a href="{{ bajo_paginacion.url_ultima }}" class="gestion-pagination-link">{{ bajo_paginacion.total_paginas }}</a>
+                {% endif %}
+
+                {% if bajo_paginacion.tiene_siguiente %}
+                    <a href="{{ bajo_paginacion.url_siguiente }}" class="gestion-pagination-link">Siguiente</a>
+                {% else %}
+                    <span class="gestion-pagination-link gestion-pagination-link-disabled">Siguiente</span>
+                {% endif %}
+            </div>
+        </nav>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% if not sin_stock and not bajo_stock %}
+    <p class="gestion-empty dashboard-empty-inline">No hay alertas de stock para mostrar.</p>
+    {% endif %}
+
+    <div class="dashboard-actions">
+        <button onclick="toggleChart()" id="chartButton" class="btn btn-primary">Ver gráfico de bajo stock</button>
+        <a href="{{ url_for('exportar_excel_dashboard') }}" class="btn btn-muted">Exportar a Excel</a>
+    </div>
+
+    <div id="chartContainer" class="dashboard-chart-modal dashboard-chart-hidden">
+        <div class="dashboard-chart" role="dialog" aria-modal="true" aria-label="Gráfico de productos con bajo stock">
+            <div id="chartDragHandle" class="dashboard-chart-header">
+                <h4>Productos con bajo stock</h4>
+                <button type="button" class="dashboard-chart-close" onclick="hideChart()" aria-label="Cerrar gráfico">X</button>
+            </div>
+            <canvas id="stockChart"></canvas>
+        </div>
+    </div>
+
+    <div class="dashboard-shortcuts">
+        <h3>Accesos rápidos</h3>
+        <div class="shortcut-grid">
+            <button onclick="location.href='/autogestion/stock'" class="btn btn-primary">Stock</button>
+            <button onclick="location.href='/autogestion/donaciones'" class="btn btn-primary">Donaciones</button>
+            {% if session.get('es_admin') %}
+            <button onclick="location.href='/autogestion/usuarios'" class="btn btn-muted">Usuarios</button>
+            <button onclick="location.href='/autogestion/auditoria-login'" class="btn btn-muted">Auditoría</button>
+            {% endif %}
+        </div>
+    </div>
+
+</section>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+let chart = null;
+let chartVisible = false;
+let isDraggingChart = false;
+let chartOffsetX = 0;
+let chartOffsetY = 0;
+
+function toggleChart() {
+    const container = document.getElementById('chartContainer');
+    const button = document.getElementById('chartButton');
+    
+    if (!chartVisible) {
+        container.classList.remove('dashboard-chart-hidden');
+        button.textContent = 'Ocultar gráfico';
+        chartVisible = true;
+        
+        if (!chart) {
+            setTimeout(() => {
+                const ctx = document.getElementById('stockChart').getContext('2d');
+                const productos = {{ productos_grafico | tojson }};
+                
+                const labels = productos.map(item => item[0]);
+                const data = productos.map(item => item[1]);
+                
+                chart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Unidades disponibles',
+                            data: data,
+                            backgroundColor: 'rgba(255, 152, 0, 0.6)',
+                            borderColor: 'rgba(255, 152, 0, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+            }, 100);
+        }
+        positionChartDefault();
+    } else {
+        hideChart();
+    }
+}
+
+function hideChart() {
+    const container = document.getElementById('chartContainer');
+    const button = document.getElementById('chartButton');
+
+    container.classList.add('dashboard-chart-hidden');
+    button.textContent = 'Ver gráfico de bajo stock';
+    chartVisible = false;
+}
+
+function positionChartDefault() {
+    const panel = document.querySelector('#chartContainer .dashboard-chart');
+    if (!panel) return;
+
+    panel.style.left = '';
+    panel.style.top = '';
+    panel.style.right = '18px';
+}
+
+function initChartDrag() {
+    const panel = document.querySelector('#chartContainer .dashboard-chart');
+    const handle = document.getElementById('chartDragHandle');
+
+    if (!panel || !handle) return;
+
+    handle.addEventListener('mousedown', function(event) {
+        if (event.button !== 0) return;
+
+        const rect = panel.getBoundingClientRect();
+        isDraggingChart = true;
+        chartOffsetX = event.clientX - rect.left;
+        chartOffsetY = event.clientY - rect.top;
+        panel.style.right = 'auto';
+        panel.style.left = rect.left + 'px';
+        panel.style.top = rect.top + 'px';
+        panel.classList.add('chart-dragging');
+        event.preventDefault();
+    });
+
+    document.addEventListener('mousemove', function(event) {
+        if (!isDraggingChart || !chartVisible) return;
+
+        const maxX = window.innerWidth - panel.offsetWidth;
+        const maxY = window.innerHeight - panel.offsetHeight;
+        const nextLeft = Math.min(Math.max(8, event.clientX - chartOffsetX), Math.max(8, maxX - 8));
+        const nextTop = Math.min(Math.max(8, event.clientY - chartOffsetY), Math.max(8, maxY - 8));
+
+        panel.style.left = nextLeft + 'px';
+        panel.style.top = nextTop + 'px';
+    });
+
+    document.addEventListener('mouseup', function() {
+        if (!isDraggingChart) return;
+        isDraggingChart = false;
+        panel.classList.remove('chart-dragging');
+    });
+}
+
+window.addEventListener('resize', function() {
+    if (window.innerWidth <= 768) {
+        positionChartDefault();
+    }
+});
+
+initChartDrag();
+
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape' && chartVisible) {
+        hideChart();
+    }
+});
+</script>
+</div>
+{% endblock %}
+

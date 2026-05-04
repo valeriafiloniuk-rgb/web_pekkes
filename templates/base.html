@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Misión Los Pekkes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=20260504-1">
+</head>
+
+<body class="{% block body_class %}{% endblock %}">
+
+<nav class="menu">
+
+    <div class="titulo" onclick="location.href='/'">
+        <img src="{{ url_for('static', filename='mision_pekkes.png') }}" alt="Logo" class="nav-logo">
+        MISIÓN LOS PEKKES
+    </div>
+
+    <div class="botones">
+    <button onclick="location.href='/quienes-somos'">Quiénes somos</button>
+    <button onclick="location.href='/que-hacemos'">Qué hacemos</button>
+    <button onclick="location.href='/asi-acompanamos'">Así acompañamos</button>
+    <button onclick="location.href='/donaciones'">Donaciones</button>
+    <button onclick="location.href='/voluntariado'">Voluntariado</button>
+
+    {% if session.get('acceso_privado') %}
+        <button onclick="location.href='/autogestion'">Panel</button>
+        <select class="menu-gestion-select" onchange="if(this.value) location.href=this.value" aria-label="Ir a gestión">
+            <option value="" selected disabled>Gestión</option>
+            <option value="" disabled>──────────────</option>
+            <option value="/autogestion/cambiar-contrasena">Cambiar contraseña</option>
+            {% if session.get('es_admin') %}
+            <option value="/autogestion/asi-acompanamos">Así acompañamos</option>
+            {% endif %}
+            <option value="/autogestion/stock">Stock</option>
+            <option value="/autogestion/donaciones">Consultar donaciones</option>
+            <option value="/autogestion/voluntarios">Voluntarios</option>
+            <option value="/autogestion/dashboard">Dashboard</option>
+            {% if session.get('es_admin') %}
+            <option value="/autogestion/usuarios">Usuarios</option>
+            <option value="/autogestion/auditoria-login">Auditoría login</option>
+            {% endif %}
+        </select>
+        <button onclick="location.href='/logout'" style="background-color:#007bff; color:white;">
+            Cerrar sesión
+        </button>
+    {% else %}
+        <button onclick="location.href='/login'">Autogestión</button>
+    {% endif %}
+    </div>
+
+</nav>
+
+<div class="main-content">
+{% block hero %}{% endblock %}
+
+{% block contenido_wrapper %}
+<div class="contenido">
+    {% block contenido %}
+    {% endblock %}
+</div>
+{% endblock %}
+</div>
+
+<footer class="site-footer">
+    <p>&copy; 2026 Misión Los Pekkes. Todos los derechos reservados.</p>
+</footer>
+
+</body>
+</html>

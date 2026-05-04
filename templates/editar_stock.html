@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+<section class="donacion-form-page usuarios-form-page">
+    <h1 class="donacion-page-title">Editar producto</h1>
+    <p class="donacion-page-subtitle">Actualiza nombre y cantidad del inventario.</p>
+
+    <div class="donacion-form-card">
+        {% with mensajes = get_flashed_messages(with_categories=true) %}
+            {% if mensajes %}
+                {% for categoria, mensaje in mensajes %}
+                <p class="form-alert{% if categoria != 'error' %} form-alert-success{% endif %}">{{ mensaje }}</p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <p id="editarStockClientError" class="form-alert" style="display: none;"></p>
+
+        <form method="POST" id="editarStockForm">
+            <div class="form-field">
+                <label for="producto">Producto</label>
+                <input id="producto" type="text" name="producto" value="{{ item[1] }}" maxlength="100" required>
+            </div>
+
+            <div class="form-field">
+                <label for="cantidad">Cantidad</label>
+                <input id="cantidad" type="number" name="cantidad" value="{{ item[2] }}" min="1" max="999999" step="1" required>
+            </div>
+
+            <button type="button" onclick="showSaveModal()" class="btn btn-primary form-submit-btn">Guardar cambios</button>
+        </form>
+    </div>
+
+    <div class="dashboard-actions usuarios-form-actions">
+        <a href="/autogestion/stock" class="btn btn-muted">Volver al stock</a>
+    </div>
+</section>
+
+<div id="saveModal" class="gestion-modal-overlay" style="display: none;">
+    <div class="gestion-modal-card">
+        <p class="gestion-modal-text">Confirma para guardar los cambios del producto.</p>
+        <div class="dashboard-actions gestion-modal-actions">
+            <button onclick="confirmSave()" class="btn btn-primary">Si, guardar</button>
+            <button onclick="hideSaveModal()" class="btn btn-muted">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+function showEditarStockError(message) {
+    const errorBox = document.getElementById('editarStockClientError');
+    errorBox.innerText = message;
+    errorBox.style.display = 'block';
+}
+
+function hideEditarStockError() {
+    const errorBox = document.getElementById('editarStockClientError');
+    errorBox.innerText = '';
+    errorBox.style.display = 'none';
+}
+
+function showSaveModal() {
+    const producto = document.getElementById('producto').value.trim();
+    const cantidad = document.getElementById('cantidad').value.trim();
+    const tieneLetras = /[A-Za-zÁÉÍÓÚáéíóúÑñ]/.test(producto);
+
+    if (!producto) {
+        showEditarStockError('Ingresá el nombre del producto.');
+        return;
+    }
+
+    if (producto.length > 100) {
+        showEditarStockError('El nombre del producto no puede exceder 100 caracteres.');
+        return;
+    }
+
+    if (!tieneLetras) {
+        showEditarStockError('El nombre del producto debe contener al menos una letra.');
+        return;
+    }
+
+    if (!cantidad) {
+        showEditarStockError('Ingresá la cantidad.');
+        return;
+    }
+
+    const cantidadNum = Number(cantidad);
+    if (!Number.isInteger(cantidadNum) || cantidadNum < 1 || cantidadNum > 999999) {
+        showEditarStockError('La cantidad debe ser un número entre 1 y 999999.');
+        return;
+    }
+
+    hideEditarStockError();
+    document.getElementById('saveModal').style.display = 'flex';
+}
+function confirmSave() {
+    document.getElementById('editarStockForm').submit();
+}
+function hideSaveModal() {
+    document.getElementById('saveModal').style.display = 'none';
+}
+document.getElementById('saveModal').addEventListener('click', function(event) {
+    if (event.target.id === 'saveModal') {
+        hideSaveModal();
+    }
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+
+<div style="max-width: 500px; margin: 50px auto; padding: 30px; background-color: #f8f9fa; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center;">
+    
+    <h2 style="color: #dc3545; margin-bottom: 20px;">🚫 Acceso denegado</h2>
+    
+    <p style="color: #666; margin-bottom: 30px; font-size: 15px;">
+        No tienes permisos para acceder a esta sección.
+    </p>
+    
+    <p style="color: #666; margin-bottom: 20px; font-size: 14px;">
+        Solo los administradores pueden realizar esta acción.
+    </p>
+    
+    <a href="/autogestion" style="display: inline-block; padding: 12px 30px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
+        Volver a autogestión
+    </a>
+
+</div>
+
+{% endblock %}

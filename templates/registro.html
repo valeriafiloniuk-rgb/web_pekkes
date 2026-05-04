@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+<section class="donacion-form-page auth-page auth-page-register">
+    <h1 class="donacion-page-title">Registro de usuario</h1>
+    <p class="donacion-page-subtitle">Crea tu cuenta. El acceso privado se habilita desde administración.</p>
+
+    <div class="donacion-form-card auth-card">
+        {% if error %}
+        <p class="form-alert">{{ error }}</p>
+        {% endif %}
+
+        {% if exito %}
+        <p class="form-alert form-alert-success">{{ exito }}</p>
+        {% endif %}
+
+        <form method="POST">
+            <div class="form-field">
+                <label for="usuario">Usuario</label>
+                <input type="text" id="usuario" name="usuario" placeholder="Elige tu usuario" required>
+            </div>
+
+            <div class="form-field">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="tu@email.com" required>
+            </div>
+
+            <div class="form-field">
+                <label for="password">Contraseña</label>
+                <input type="password" name="password" id="password" placeholder="Mínimo 12 caracteres" required>
+                <div class="auth-requirements">
+                    <p>Requisitos:</p>
+                    <ul>
+                        <li>Mínimo 12 caracteres</li>
+                        <li>Al menos una mayúscula (A-Z)</li>
+                        <li>Al menos una minúscula (a-z)</li>
+                        <li>Al menos un número (0-9)</li>
+                        <li>Al menos un carácter especial (!@#$%^&*-_=+)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary form-submit-btn">Registrarse</button>
+        </form>
+    </div>
+
+    <div class="auth-links">
+        <p>¿Ya tienes cuenta?</p>
+        <p><a href="/login">Volver al inicio de sesión</a></p>
+    </div>
+</section>
+
+{% endblock %}

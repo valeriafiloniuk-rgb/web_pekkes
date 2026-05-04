@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+<section class="donacion-form-page feedback-page">
+    <div class="donacion-form-card feedback-card gracias-card">
+        <div class="feedback-badge feedback-badge-success">Donacion registrada</div>
+        <h1 class="donacion-page-title">Gracias por tu donacion</h1>
+        <p class="donacion-page-subtitle">Tu aporte nos ayuda a sostener y ampliar cada accion solidaria.</p>
+
+        <div class="feedback-summary-box">
+            <h3>Detalles de tu donacion</h3>
+            <p><strong>Nombre:</strong> {{ nombre }}</p>
+            <p><strong>Tipo de donante:</strong> {{ tipo_donante|capitalize }}</p>
+            <p><strong>Tipo de donacion:</strong> {{ tipo_donacion|capitalize }}</p>
+            {% if tipo_donacion == 'dinero' %}
+            <p><strong>Monto:</strong> ${{ "%.2f"|format(monto) }}</p>
+            {% else %}
+            <p><strong>Detalle:</strong> {{ detalle }}</p>
+            {% endif %}
+            <p class="feedback-meta">Fecha: {{ fecha_actual }}</p>
+        </div>
+
+        <div class="dashboard-actions feedback-actions">
+            <a href="/" class="btn btn-primary">Volver al inicio</a>
+            <a href="/donaciones" class="btn btn-muted">Hacer otra donacion</a>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

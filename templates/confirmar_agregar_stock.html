@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+<section class="donacion-form-page usuarios-form-page stock-confirm-page">
+    <h1 class="donacion-page-title">Producto ya existe</h1>
+    <p class="donacion-page-subtitle">El producto "{{ producto }}" ya esta cargado en stock.</p>
+
+    <div class="donacion-form-card stock-confirm-card">
+        <div class="stock-resumen-box">
+            <p><strong>Cantidad actual:</strong> {{ cantidad_existente }}</p>
+            <p><strong>Cantidad a agregar:</strong> {{ cantidad_nueva }}</p>
+            <p><strong>Total resultante:</strong> {{ cantidad_existente + cantidad_nueva }}</p>
+        </div>
+
+        <p class="stock-confirm-text">¿Qué deseas hacer?</p>
+
+        <form method="POST" action="/autogestion/stock/confirmar_agregar">
+            <div class="dashboard-actions stock-confirm-actions">
+                <button type="submit" name="action" value="sumar" class="btn btn-primary">Sumar cantidad</button>
+                <button type="submit" name="action" value="cancelar" class="btn btn-muted">Cancelar</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="dashboard-actions usuarios-form-actions">
+        <a href="/autogestion/stock/agregar" class="btn btn-muted">Volver al formulario</a>
+    </div>
+</section>
+
+{% endblock %}

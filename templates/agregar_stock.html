@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+<section class="donacion-form-page usuarios-form-page">
+    <h1 class="donacion-page-title">Agregar producto</h1>
+    <p class="donacion-page-subtitle">Carga un nuevo item al inventario.</p>
+
+    <div class="donacion-form-card">
+        {% with mensajes = get_flashed_messages(with_categories=true) %}
+            {% if mensajes %}
+                {% for categoria, mensaje in mensajes %}
+                <p class="form-alert{% if categoria != 'error' %} form-alert-success{% endif %}">{{ mensaje }}</p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <p id="agregarStockClientError" class="form-alert" style="display: none;"></p>
+
+        <form method="POST" id="agregarStockForm">
+            <div class="form-field">
+                <label for="producto">Producto</label>
+                <input id="producto" type="text" name="producto" value="{{ form_data.producto }}" placeholder="Ej: Arroz, Lentejas, Salsa de tomate" maxlength="100" required>
+            </div>
+
+            <div class="form-field">
+                <label for="cantidad">Cantidad</label>
+                <input id="cantidad" type="number" name="cantidad" value="{{ form_data.cantidad }}" placeholder="Ej: 50" min="1" max="999999" step="1" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary form-submit-btn">Guardar</button>
+        </form>
+    </div>
+
+    <div class="dashboard-actions usuarios-form-actions">
+        <a href="/autogestion/stock" class="btn btn-muted">Volver</a>
+    </div>
+</section>
+
+<script>
+function showAgregarStockError(message) {
+    const errorBox = document.getElementById('agregarStockClientError');
+    errorBox.innerText = message;
+    errorBox.style.display = 'block';
+}
+
+function hideAgregarStockError() {
+    const errorBox = document.getElementById('agregarStockClientError');
+    errorBox.innerText = '';
+    errorBox.style.display = 'none';
+}
+
+document.getElementById('agregarStockForm').addEventListener('submit', function(event) {
+    const producto = document.getElementById('producto').value.trim();
+    const cantidad = document.getElementById('cantidad').value.trim();
+    const tieneLetras = /[A-Za-zÁÉÍÓÚáéíóúÑñ]/.test(producto);
+
+    if (!producto) {
+        event.preventDefault();
+        showAgregarStockError('Ingresá el nombre del producto.');
+        return;
+    }
+
+    if (producto.length > 100) {
+        event.preventDefault();
+        showAgregarStockError('El nombre del producto no puede exceder 100 caracteres.');
+        return;
+    }
+
+    if (!tieneLetras) {
+        event.preventDefault();
+        showAgregarStockError('El nombre del producto debe contener al menos una letra.');
+        return;
+    }
+
+    if (!cantidad) {
+        event.preventDefault();
+        showAgregarStockError('Ingresá la cantidad.');
+        return;
+    }
+
+    const cantidadNum = Number(cantidad);
+    if (!Number.isInteger(cantidadNum) || cantidadNum < 1 || cantidadNum > 999999) {
+        event.preventDefault();
+        showAgregarStockError('La cantidad debe ser un número entre 1 y 999999.');
+        return;
+    }
+
+    hideAgregarStockError();
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block body_class %}asiacompanamos-page{% endblock %}
+
+{% block contenido %}
+<section class="institucional-page acompanamos-page">
+    <div class="institucional-hero hero-acompanamos">
+        <p class="institucional-eyebrow">COMUNIDAD EN ACCIÓN</p>
+        <h1>Así acompañamos</h1>
+        <p class="institucional-lead">
+            Cada sábado construimos un espacio de encuentro, escucha y acompañamiento real para las familias,
+            gracias al compromiso de voluntarios, colaboradores y personas que se suman con generosidad.
+        </p>
+    </div>
+
+    <div class="institucional-quote acompanamos-quote">
+        <p>
+            Acompañar es más que estar: es escuchar, sostener y caminar junto a cada familia semana a semana,
+            con la certeza de que ningún niño debería sentirse solo.
+        </p>
+    </div>
+
+    <div class="acompanamos-jornadas-wrap">
+        <h2 class="acompanamos-jornadas-title">Jornadas compartidas</h2>
+
+        {% if jornadas %}
+        <div class="acompanamos-story-grid">
+            {% for jornada in jornadas %}
+            <article class="institucional-card acompanamos-story-card">
+                <div class="acompanamos-jornada-date">Sábado {{ jornada.fecha }}</div>
+                <h3>{{ jornada.titulo }}</h3>
+                {% if jornada.foto_url %}
+                <img src="{{ jornada.foto_url }}" alt="Foto de la jornada {{ jornada.titulo }}" class="acompanamos-jornada-foto">
+                {% endif %}
+                <p>{{ jornada.resumen }}</p>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="gestion-empty">Todavía no hay jornadas publicadas. Muy pronto vamos a compartir lo realizado cada sábado.</p>
+        {% endif %}
+    </div>
+
+</section>
+
+{% endblock %}

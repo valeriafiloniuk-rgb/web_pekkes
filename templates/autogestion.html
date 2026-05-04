@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+<section class="donacion-form-page autogestion-page">
+	<h1 class="donacion-page-title autogestion-title">Autogestión</h1>
+	<p class="donacion-page-subtitle autogestion-subtitle">Acceso rápido al sistema interno.</p>
+
+	<div class="donacion-form-card autogestion-grid">
+		<a href="/autogestion/cambiar-contrasena" class="autogestion-card">🔑 Cambiar contraseña</a>
+		{% if session.get('es_admin') %}
+		<a href="/autogestion/asi-acompanamos" class="autogestion-card">📝 Así acompañamos</a>
+		{% endif %}
+		<a href="/autogestion/stock" class="autogestion-card">📦 Stock</a>
+		<a href="/autogestion/donaciones" class="autogestion-card">💝 Consultar donaciones</a>
+		<a href="/autogestion/voluntarios" class="autogestion-card">🤝 Voluntarios</a>
+		<a href="/autogestion/dashboard" class="autogestion-card">📊 Dashboard</a>
+		{% if session.get('es_admin') %}
+		<a href="/autogestion/usuarios" class="autogestion-card">👥 Usuarios</a>
+		<a href="/autogestion/auditoria-login" class="autogestion-card">🔐 Auditoría de login</a>
+		{% endif %}
+	</div>
+</section>
+
+{% endblock %}

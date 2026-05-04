@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+<section class="donacion-form-page donaciones-compact-page">
+    <h1 class="donacion-page-title">Donaciones</h1>
+    <p class="donacion-page-subtitle">Tu ayuda es muy importante para nosotros.</p>
+
+    <div id="infoTransferencia" class="institucional-quote voluntariado-address donaciones-compact-transfer">
+        <h2>Donación en dinero por transferencia</h2>
+        <p>Si elegís donar dinero, podés transferir a esta cuenta:</p>
+        <div class="donacion-cuenta-grid">
+            <div><strong>Titular:</strong> {{ cuenta_titular }}</div>
+            <div><strong>Banco:</strong> {{ cuenta_banco }}</div>
+            <div><strong>Alias:</strong> {{ cuenta_alias }}</div>
+            <div><strong>CBU:</strong> {{ cuenta_cbu }}</div>
+        </div>
+        <p class="donacion-cuenta-note">Luego completá el formulario para registrar tu aporte.</p>
+    </div>
+
+    <form method="post" action="{{ url_for('donaciones') }}" class="donacion-form-card donaciones-compact-form" enctype="multipart/form-data">
+        {% if error %}
+        <p class="form-alert">{{ error }}</p>
+        {% endif %}
+
+        <div class="donaciones-compact-grid">
+            <div class="form-field">
+                <label for="nombre">Nombre</label>
+                <input id="nombre" name="nombre" type="text" value="{{ nombre }}" maxlength="100" required>
+            </div>
+
+            <div class="form-field">
+                <label for="tipo_donante">Quién dona</label>
+                <select id="tipo_donante" name="tipo_donante" required>
+                    <option value="persona" {% if tipo_donante == 'persona' %}selected{% endif %}>Persona</option>
+                    <option value="entidad" {% if tipo_donante == 'entidad' %}selected{% endif %}>Entidad</option>
+                </select>
+            </div>
+
+            <div class="form-field">
+                <label for="tipo_donacion">Tipo de donación</label>
+                <select id="tipo_donacion" name="tipo_donacion" required onchange="actualizarFormularioDonacion()">
+                    <option value="dinero" {% if tipo_donacion == 'dinero' %}selected{% endif %}>Monto en dinero</option>
+                    <option value="alimentos" {% if tipo_donacion == 'alimentos' %}selected{% endif %}>Alimentos</option>
+                    <option value="articulos" {% if tipo_donacion == 'articulos' %}selected{% endif %}>Artículos</option>
+                </select>
+            </div>
+
+            <div id="campoMonto" class="form-field">
+                <label for="monto">Monto</label>
+                <input id="monto" name="monto" type="number" min="1" step="0.01" value="{{ monto }}">
+            </div>
+        </div>
+
+        <div id="campoComprobante" class="form-field">
+            <label for="comprobante">Comprobante (obligatorio para dinero)</label>
+            <input id="comprobante" name="comprobante" type="file" accept=".jpg,.jpeg,.png,.webp,.pdf">
+            <small class="donacion-comprobante-help">Si donás dinero, debés adjuntar comprobante. Formatos: JPG, PNG, WEBP o PDF (máx. 5 MB).</small>
+        </div>
+
+        <div id="campoDetalle" class="form-field" style="display: none;">
+            <label for="detalle">Detalle de la donación</label>
+            <textarea id="detalle" name="detalle" rows="3" maxlength="300">{{ detalle }}</textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary form-submit-btn">Donar</button>
+    </form>
+</section>
+
+<script>
+function actualizarFormularioDonacion() {
+    const tipo = document.getElementById('tipo_donacion').value;
+    const campoMonto = document.getElementById('campoMonto');
+    const campoComprobante = document.getElementById('campoComprobante');
+    const campoDetalle = document.getElementById('campoDetalle');
+    const infoTransferencia = document.getElementById('infoTransferencia');
+    const monto = document.getElementById('monto');
+    const detalle = document.getElementById('detalle');
+    const comprobante = document.getElementById('comprobante');
+
+    if (tipo === 'dinero') {
+        infoTransferencia.style.display = 'block';
+        campoMonto.style.display = 'block';
+        campoComprobante.style.display = 'flex';
+        campoDetalle.style.display = 'none';
+        monto.required = true;
+        comprobante.required = true;
+        detalle.required = false;
+    } else {
+        infoTransferencia.style.display = 'none';
+        campoMonto.style.display = 'none';
+        campoComprobante.style.display = 'none';
+        campoDetalle.style.display = 'block';
+        monto.required = false;
+        comprobante.required = false;
+        detalle.required = true;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', actualizarFormularioDonacion);
+</script>
+
+{% endblock %}

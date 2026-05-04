@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+<section class="gestion-donaciones-page acompanamos-admin-page">
+    <h1 class="gestion-donaciones-title">Administrar “Así acompañamos”</h1>
+    <p class="gestion-auditoria-subtitle">Publica lo realizado cada sábado para mostrar el trabajo de la comunidad.</p>
+
+    {% with mensajes = get_flashed_messages(with_categories=true) %}
+        {% if mensajes %}
+            {% for categoria, mensaje in mensajes %}
+                <p class="form-alert{% if categoria == 'success' %} form-alert-success{% elif categoria == 'info' %} form-alert-info{% endif %}">{{ mensaje }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <details class="donacion-form-card acompanamos-admin-form-card acompanamos-admin-collapsible">
+        <summary class="acompanamos-admin-summary">Nueva publicación</summary>
+        <form method="POST" enctype="multipart/form-data">
+            <div class="gestion-filtros-grid acompanamos-admin-grid">
+                <div class="form-field">
+                    <label for="titulo">Título de la jornada</label>
+                    <input id="titulo" type="text" name="titulo" maxlength="120" placeholder="Ej: Jornada de merienda y apoyo escolar" required>
+                </div>
+                <div class="form-field">
+                    <label for="fecha_jornada">Fecha de la jornada</label>
+                    <input id="fecha_jornada" type="date" name="fecha_jornada" required>
+                </div>
+            </div>
+
+            <div class="form-field">
+                <label for="resumen">Resumen de lo realizado</label>
+                <textarea id="resumen" name="resumen" rows="4" maxlength="600" placeholder="Contá brevemente qué se hizo, quiénes acompañaron y cómo se llevó adelante la jornada." required></textarea>
+            </div>
+
+            <div class="form-field">
+                <label for="foto_jornada">Foto de la jornada (opcional)</label>
+                <input id="foto_jornada" type="file" name="foto_jornada" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp">
+                <small class="usuarios-form-help">Formatos permitidos: JPG, PNG o WEBP.</small>
+            </div>
+
+            <div class="dashboard-actions">
+                <button type="submit" class="btn btn-primary">Publicar jornada</button>
+            </div>
+        </form>
+    </details>
+
+    <h2 class="gestion-donaciones-title acompanamos-admin-subtitle">Publicaciones registradas</h2>
+
+    <div class="donacion-form-card gestion-filtros-card">
+        <form method="GET" action="/autogestion/asi-acompanamos" class="gestion-filtros-form">
+            <div class="gestion-filtros-grid">
+                <div class="form-field">
+                    <label for="fecha_desde">Desde</label>
+                    <input id="fecha_desde" type="date" name="fecha_desde" value="{{ filtros.fecha_desde }}">
+                </div>
+                <div class="form-field">
+                    <label for="fecha_hasta">Hasta</label>
+                    <input id="fecha_hasta" type="date" name="fecha_hasta" value="{{ filtros.fecha_hasta }}">
+                </div>
+            </div>
+            <div class="dashboard-actions gestion-filtros-actions">
+                <button type="submit" class="btn btn-primary">Filtrar</button>
+                <a href="/autogestion/asi-acompanamos" class="btn btn-muted">Limpiar</a>
+            </div>
+        </form>
+        <p class="gestion-result-count">
+            {% if total_resultados > 0 %}
+                Mostrando {{ paginacion.inicio_resultado }}-{{ paginacion.fin_resultado }} de {{ total_resultados }} publicacion{% if total_resultados != 1 %}es{% endif %}
+            {% else %}
+                0 publicaciones encontradas
+            {% endif %}
+        </p>
+    </div>
+
+    {% if jornadas %}
+    <div class="gestion-table-wrap">
+        <table class="gestion-donaciones-table acompanamos-admin-table">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Título</th>
+                    <th>Resumen</th>
+                    <th>Foto</th>
+                    <th>Publicado por</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for jornada in jornadas %}
+                <tr>
+                    <td>{{ jornada.fecha_jornada }}</td>
+                    <td>{{ jornada.titulo }}</td>
+                    <td>{{ jornada.resumen }}</td>
+                    <td>
+                        {% if jornada.foto_url %}
+                        <a href="{{ jornada.foto_url }}" target="_blank" rel="noopener" class="table-action">Ver foto</a>
+                        {% else %}
+                        -
+                        {% endif %}
+                    </td>
+                    <td>{{ jornada.creado_por }}</td>
+                    <td>
+                        <a href="/autogestion/asi-acompanamos/editar/{{ jornada.id }}" class="table-action action-warning">Editar</a>
+                        |
+                        <a href="/autogestion/asi-acompanamos/eliminar/{{ jornada.id }}" class="table-action action-danger" onclick="return confirm('¿Eliminar esta jornada?');">Eliminar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <nav class="gestion-pagination" aria-label="Paginacion de publicaciones">
+        <div class="gestion-pagination-summary">
+            Página {{ paginacion.pagina_actual }} de {{ paginacion.total_paginas }}
+        </div>
+        <div class="gestion-pagination-links">
+            {% if paginacion.tiene_anterior %}
+                <a href="{{ paginacion.url_anterior }}" class="gestion-pagination-link">Anterior</a>
+            {% else %}
+                <span class="gestion-pagination-link gestion-pagination-link-disabled">Anterior</span>
+            {% endif %}
+
+            {% if paginacion.muestra_primera %}
+                <a href="{{ paginacion.url_primera }}" class="gestion-pagination-link">1</a>
+                <span class="gestion-pagination-ellipsis">…</span>
+            {% endif %}
+
+            {% for pagina in paginacion.urls_paginas %}
+                {% if pagina.actual %}
+                    <span class="gestion-pagination-link gestion-pagination-link-active">{{ pagina.numero }}</span>
+                {% else %}
+                    <a href="{{ pagina.url }}" class="gestion-pagination-link">{{ pagina.numero }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if paginacion.muestra_ultima %}
+                <span class="gestion-pagination-ellipsis">…</span>
+                <a href="{{ paginacion.url_ultima }}" class="gestion-pagination-link">{{ paginacion.total_paginas }}</a>
+            {% endif %}
+
+            {% if paginacion.tiene_siguiente %}
+                <a href="{{ paginacion.url_siguiente }}" class="gestion-pagination-link">Siguiente</a>
+            {% else %}
+                <span class="gestion-pagination-link gestion-pagination-link-disabled">Siguiente</span>
+            {% endif %}
+        </div>
+    </nav>
+    {% else %}
+    <p class="gestion-empty">Aún no hay jornadas cargadas.</p>
+    {% endif %}
+</section>
+
+{% endblock %}

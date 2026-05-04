@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+<section class="gestion-donaciones-page voluntarios-page">
+    <h1 class="gestion-donaciones-title">Postulaciones de voluntarios</h1>
+    <p class="gestion-auditoria-subtitle">Seguimiento de personas interesadas en colaborar con la misión.</p>
+
+    <div class="gestion-kpi-grid">
+        <div class="gestion-kpi-card kpi-dinero">
+            <div class="kpi-label">TOTAL DE POSTULACIONES</div>
+            <div class="kpi-value">{{ total_postulaciones }}</div>
+        </div>
+    </div>
+
+    <div class="donacion-form-card gestion-filtros-card">
+        <form method="GET" action="/autogestion/voluntarios" class="gestion-filtros-form">
+            <div class="gestion-filtros-grid">
+                <div class="form-field">
+                    <label for="q">Buscar por nombre</label>
+                    <input id="q" type="text" name="q" value="{{ busqueda }}" placeholder="Ej: Maria">
+                </div>
+            </div>
+            <div class="dashboard-actions gestion-filtros-actions">
+                <button type="submit" class="btn btn-primary">Buscar</button>
+                <a href="/autogestion/voluntarios" class="btn btn-muted">Limpiar</a>
+            </div>
+        </form>
+        <p class="gestion-result-count">
+            {% if total_resultados > 0 %}
+                Mostrando {{ paginacion.inicio_resultado }}-{{ paginacion.fin_resultado }} de {{ total_resultados }} postulacion{% if total_resultados != 1 %}es{% endif %}
+            {% else %}
+                0 postulaciones encontradas
+            {% endif %}
+        </p>
+    </div>
+
+    {% if voluntarios %}
+    <div class="gestion-table-wrap">
+        <table class="gestion-donaciones-table voluntarios-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Email</th>
+                    <th>Telefono</th>
+                    <th>Disponibilidad</th>
+                    <th>Mensaje</th>
+                    <th>Fecha</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for voluntario in voluntarios %}
+                <tr>
+                    <td>{{ voluntario[0] }}</td>
+                    <td>{{ voluntario[1] }}</td>
+                    <td>{{ voluntario[2] }}</td>
+                    <td>{{ voluntario[3] if voluntario[3] else '-' }}</td>
+                    <td>{{ voluntario[4] if voluntario[4] else '-' }}</td>
+                    <td>{{ voluntario[5] }}</td>
+                    <td>{{ voluntario[6] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <nav class="gestion-pagination" aria-label="Paginacion de voluntarios">
+        <div class="gestion-pagination-summary">
+            Página {{ paginacion.pagina_actual }} de {{ paginacion.total_paginas }}
+        </div>
+        <div class="gestion-pagination-links">
+            {% if paginacion.tiene_anterior %}
+                <a href="{{ paginacion.url_anterior }}" class="gestion-pagination-link">Anterior</a>
+            {% else %}
+                <span class="gestion-pagination-link gestion-pagination-link-disabled">Anterior</span>
+            {% endif %}
+
+            {% if paginacion.muestra_primera %}
+                <a href="{{ paginacion.url_primera }}" class="gestion-pagination-link">1</a>
+                <span class="gestion-pagination-ellipsis">…</span>
+            {% endif %}
+
+            {% for pagina in paginacion.urls_paginas %}
+                {% if pagina.actual %}
+                    <span class="gestion-pagination-link gestion-pagination-link-active">{{ pagina.numero }}</span>
+                {% else %}
+                    <a href="{{ pagina.url }}" class="gestion-pagination-link">{{ pagina.numero }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if paginacion.muestra_ultima %}
+                <span class="gestion-pagination-ellipsis">…</span>
+                <a href="{{ paginacion.url_ultima }}" class="gestion-pagination-link">{{ paginacion.total_paginas }}</a>
+            {% endif %}
+
+            {% if paginacion.tiene_siguiente %}
+                <a href="{{ paginacion.url_siguiente }}" class="gestion-pagination-link">Siguiente</a>
+            {% else %}
+                <span class="gestion-pagination-link gestion-pagination-link-disabled">Siguiente</span>
+            {% endif %}
+        </div>
+    </nav>
+    {% else %}
+    <p class="gestion-empty">Aun no hay postulaciones de voluntarios registradas.</p>
+    {% endif %}
+</section>
+
+{% endblock %}

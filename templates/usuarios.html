@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+<section class="gestion-donaciones-page usuarios-page">
+    <h1 class="gestion-donaciones-title">Usuarios</h1>
+    <p class="gestion-auditoria-subtitle">Gestion de accesos y roles del sistema privado.</p>
+
+    <div class="donacion-form-card gestion-filtros-card">
+        <form method="GET" action="/autogestion/usuarios" class="gestion-filtros-form">
+            <div class="gestion-filtros-grid">
+                <div class="form-field">
+                    <label for="q">Buscar usuario</label>
+                    <input id="q" type="text" name="q" value="{{ busqueda }}" placeholder="Ej: admin">
+                </div>
+            </div>
+            <div class="dashboard-actions gestion-filtros-actions">
+                <button type="submit" class="btn btn-primary">Buscar</button>
+                <a href="/autogestion/usuarios" class="btn btn-muted">Limpiar</a>
+                <a href="/autogestion/usuarios/agregar" class="btn btn-primary usuarios-agregar-btn">➕ Agregar usuario</a>
+            </div>
+        </form>
+        <p class="gestion-result-count">
+            {% if total_resultados > 0 %}
+                Mostrando {{ paginacion.inicio_resultado }}-{{ paginacion.fin_resultado }} de {{ total_resultados }} usuario{% if total_resultados != 1 %}s{% endif %}
+            {% else %}
+                0 usuarios encontrados
+            {% endif %}
+        </p>
+    </div>
+
+    {% if usuarios %}
+    <div class="gestion-table-wrap">
+        <table class="gestion-donaciones-table usuarios-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Usuario</th>
+                    <th>Email</th>
+                    <th>Acceso privado</th>
+                    <th>Rol</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for u in usuarios %}
+                <tr>
+                    <td>{{ u[0] }}</td>
+                    <td>{{ u[1] }}</td>
+                    <td>{{ u[2] }}</td>
+                    <td>{{ 'Habilitado' if u[3] == 1 else 'Pendiente' }}</td>
+                    <td>{{ 'Admin' if u[4] == 1 else 'Usuario' }}</td>
+                    <td>
+                        <a href="/autogestion/usuarios/editar/{{ u[0] }}">✏️ Editar</a>
+                        |
+                        <a href="/autogestion/usuarios/eliminar/{{ u[0] }}" onclick="return confirm('¿Eliminar este usuario?');">❌ Eliminar</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if paginacion.total_paginas > 1 %}
+    <nav class="gestion-pagination" aria-label="Paginacion de usuarios">
+        <div class="gestion-pagination-summary">
+            Página {{ paginacion.pagina_actual }} de {{ paginacion.total_paginas }}
+        </div>
+        <div class="gestion-pagination-links">
+            {% if paginacion.tiene_anterior %}
+                <a href="{{ paginacion.url_anterior }}" class="gestion-pagination-link">Anterior</a>
+            {% else %}
+                <span class="gestion-pagination-link gestion-pagination-link-disabled">Anterior</span>
+            {% endif %}
+
+            {% if paginacion.muestra_primera %}
+                <a href="{{ paginacion.url_primera }}" class="gestion-pagination-link">1</a>
+                <span class="gestion-pagination-ellipsis">…</span>
+            {% endif %}
+
+            {% for pagina in paginacion.urls_paginas %}
+                {% if pagina.actual %}
+                    <span class="gestion-pagination-link gestion-pagination-link-active">{{ pagina.numero }}</span>
+                {% else %}
+                    <a href="{{ pagina.url }}" class="gestion-pagination-link">{{ pagina.numero }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if paginacion.muestra_ultima %}
+                <span class="gestion-pagination-ellipsis">…</span>
+                <a href="{{ paginacion.url_ultima }}" class="gestion-pagination-link">{{ paginacion.total_paginas }}</a>
+            {% endif %}
+
+            {% if paginacion.tiene_siguiente %}
+                <a href="{{ paginacion.url_siguiente }}" class="gestion-pagination-link">Siguiente</a>
+            {% else %}
+                <span class="gestion-pagination-link gestion-pagination-link-disabled">Siguiente</span>
+            {% endif %}
+        </div>
+    </nav>
+    {% endif %}
+    {% else %}
+    <p class="gestion-empty">No hay usuarios registrados.</p>
+    {% endif %}
+</section>
+
+{% endblock %}

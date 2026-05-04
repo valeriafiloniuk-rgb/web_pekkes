@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+<section class="gestion-donaciones-page password-change-page">
+    <h1 class="gestion-donaciones-title">Cambiar contraseña</h1>
+    <p class="gestion-auditoria-subtitle">Actualiza tu clave de acceso para mantener tu cuenta segura.</p>
+
+    <div class="donacion-form-card password-change-card">
+        {% if error %}
+        <p class="form-alert">{{ error }}</p>
+        {% endif %}
+
+        {% if exito %}
+        <p class="form-alert form-alert-success">{{ exito }}</p>
+        {% endif %}
+
+        <form method="POST">
+            <p class="usuarios-id-badge">Usuario actual: {{ usuario_actual }}</p>
+
+            <input type="text" name="usuario_actual" value="{{ usuario_actual }}" autocomplete="username" class="password-change-hidden-user" tabindex="-1" aria-hidden="true">
+
+            <div class="form-field">
+                <label for="password_actual">Contraseña actual</label>
+                <input id="password_actual" type="password" name="password_actual" required autocomplete="current-password">
+            </div>
+
+            <div class="form-field">
+                <label for="password_nueva">Nueva contraseña</label>
+                <input id="password_nueva" type="password" name="password_nueva" required autocomplete="new-password">
+                <small class="usuarios-form-help">12+ caracteres, mayúscula, minúscula, número y especial (!@#$%^&*-_=+).</small>
+            </div>
+
+            <div class="form-field">
+                <label for="password_confirmacion">Confirmar nueva contraseña</label>
+                <input id="password_confirmacion" type="password" name="password_confirmacion" required autocomplete="new-password">
+            </div>
+
+            <button type="submit" class="btn btn-primary form-submit-btn">Guardar nueva contraseña</button>
+        </form>
+    </div>
+
+    <div class="dashboard-actions password-change-actions">
+        <a href="/autogestion" class="btn btn-muted">Volver al panel</a>
+    </div>
+</section>
+
+{% endblock %}

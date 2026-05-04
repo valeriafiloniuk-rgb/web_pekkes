@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+<section class="donacion-form-page auth-page">
+    <h1 class="donacion-page-title">Iniciar sesión</h1>
+    <p class="donacion-page-subtitle">Acceso al sistema de autogestión.</p>
+
+    <div class="donacion-form-card auth-card">
+        {% if error %}
+        <p class="form-alert">{{ error_msg if error_msg else 'No fue posible iniciar sesión' }}</p>
+        {% endif %}
+
+        <form method="POST" action="/login">
+            <div class="form-field">
+                <label for="usuario">Usuario</label>
+                <input type="text" id="usuario" name="usuario" required>
+            </div>
+
+            <div class="form-field">
+                <label for="password">Contraseña</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary form-submit-btn">Ingresar</button>
+        </form>
+    </div>
+
+    <div class="auth-links">
+        <p><a href="/registro">¿No tienes cuenta? Regístrate aquí</a></p>
+        <p><a href="/olvide-contrasena">Olvidé mi contraseña</a></p>
+    </div>
+</section>
+{% endblock %}
