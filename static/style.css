@@ -12,6 +12,10 @@ body {
     flex: 1;
     display: flex;
     flex-direction: column;
+    background:
+        radial-gradient(circle at 10% 20%, rgba(26, 60, 143, 0.08) 0%, rgba(26, 60, 143, 0) 38%),
+        radial-gradient(circle at 90% 30%, rgba(47, 125, 225, 0.08) 0%, rgba(47, 125, 225, 0) 36%),
+        linear-gradient(180deg, #f6f9ff 0%, #f1f5fb 100%);
 }
 
 .home-page .main-content {
@@ -149,7 +153,7 @@ body {
     justify-content: flex-start;
     flex-wrap: wrap;
     gap: 8px;
-    margin-left: 50px;
+    margin-left: 130px;
     flex: 1;
 }
 
@@ -194,14 +198,213 @@ body {
     margin: 0;
 }
 
-.contenido {
-    width: 60%;
-    margin: auto;
-    margin-top: 30px;
-    background: white;
-    padding: 20px;
-    text-align: center;
+.chatbot-toggle {
+    position: fixed;
+    right: 18px;
+    bottom: 56px;
+    z-index: 1300;
+    border: none;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #1f5fbf 0%, #1a3c8f 100%);
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 14px;
+    box-shadow: 0 10px 24px rgba(18, 44, 87, 0.35);
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+.chatbot-toggle:hover {
+    filter: brightness(1.06);
+}
+
+.chatbot-toggle-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.22);
+    flex-shrink: 0;
+}
+
+.chatbot-toggle-icon svg,
+.chatbot-title-icon svg {
+    display: block;
+}
+
+.chatbot-panel {
+    position: fixed;
+    right: 18px;
+    bottom: 112px;
+    width: min(92vw, 360px);
+    max-height: 66vh;
+    display: none;
+    flex-direction: column;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid #c8d9f3;
+    background: #ffffff;
+    box-shadow: 0 16px 34px rgba(18, 44, 87, 0.24);
+    z-index: 1300;
+}
+
+.chatbot-panel.open {
+    display: flex;
+}
+
+.chatbot-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 12px;
+    background: linear-gradient(135deg, #1a3c8f 0%, #1f5fbf 100%);
+    color: #ffffff;
+}
+
+.chatbot-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.chatbot-title-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.18);
+    flex-shrink: 0;
+}
+
+.chatbot-header button {
+    width: 26px;
+    height: 26px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.chatbot-messages {
+    padding: 10px;
+    overflow-y: auto;
+    background: #f6f9ff;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.chatbot-message {
+    max-width: 88%;
+    padding: 8px 10px;
     border-radius: 10px;
+    line-height: 1.4;
+    font-size: 13px;
+    text-align: left;
+}
+
+.chatbot-message.bot {
+    background: #e8f1ff;
+    color: #16345e;
+    border: 1px solid #c8dbfb;
+    align-self: flex-start;
+}
+
+.chatbot-message.user {
+    background: #1f5fbf;
+    color: #ffffff;
+    align-self: flex-end;
+}
+
+.chatbot-quick-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 8px 10px;
+    background: #ffffff;
+    border-top: 1px solid #e5edf9;
+}
+
+.chatbot-quick-actions button {
+    border: 1px solid #bfd2f2;
+    background: #f2f7ff;
+    color: #1a3c8f;
+    border-radius: 999px;
+    padding: 5px 10px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.chatbot-quick-actions button:hover {
+    background: #e3efff;
+}
+
+.chatbot-form {
+    display: flex;
+    gap: 6px;
+    padding: 8px 10px 10px;
+    border-top: 1px solid #e5edf9;
+    background: #ffffff;
+}
+
+.chatbot-form input {
+    flex: 1;
+    border: 1px solid #bfd2f2;
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 13px;
+}
+
+.chatbot-form button {
+    border: none;
+    border-radius: 8px;
+    background: #1f5fbf;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 8px 10px;
+    cursor: pointer;
+}
+
+@media (max-width: 700px) {
+    .chatbot-toggle {
+        right: 12px;
+        bottom: 38px;
+        padding: 10px 12px;
+    }
+
+    .chatbot-toggle-text {
+        display: none;
+    }
+
+    .chatbot-panel {
+        right: 12px;
+        left: 12px;
+        width: auto;
+        bottom: 88px;
+        max-height: 68vh;
+    }
+}
+
+.contenido {
+    width: min(96%, 1180px);
+    margin: 22px auto 0;
+    background: white;
+    padding: 22px;
+    text-align: center;
+    border-radius: 14px;
+    box-shadow: 0 10px 26px rgba(19, 46, 87, 0.08);
 }
 
 /* LISTA DE STOCK */
@@ -767,7 +970,7 @@ tbody tr:nth-child(odd) {
 }
 
 .donaciones-compact-page {
-    max-width: 640px;
+    max-width: 820px;
     margin: 0 auto;
     padding: 12px;
     border: 1px solid #d6e4f5;
@@ -993,7 +1196,7 @@ tbody tr:nth-child(odd) {
 }
 
 .voluntariado-page {
-    max-width: 520px;
+    max-width: 700px;
     margin: 0 auto;
     padding: 12px;
     border: 1px solid #d6e4f5;
@@ -1064,9 +1267,9 @@ tbody tr:nth-child(odd) {
 /* AUTOGESTION PRINCIPAL */
 .autogestion-page {
     text-align: left;
-    max-width: 520px;
-    margin: 0 auto;
-    padding: 12px;
+    max-width: 900px;
+    margin: 30px auto 0;
+    padding: 28px;
     border: 1px solid #d6e4f5;
     border-radius: 16px;
     background: linear-gradient(180deg, #f8fbff 0%, #f3f8ff 100%);
@@ -1086,9 +1289,9 @@ tbody tr:nth-child(odd) {
 }
 
 .autogestion-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
     border: 1px solid #cfe0f8;
     background: #ffffff;
     box-shadow: 0 10px 22px rgba(20, 39, 75, 0.1);
@@ -1098,13 +1301,13 @@ tbody tr:nth-child(odd) {
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    min-height: 52px;
+    min-height: 70px;
     text-decoration: none;
     border-radius: 10px;
     color: #1f2a44;
     font-weight: bold;
-    font-size: 15px;
-    padding: 0 14px;
+    font-size: 16px;
+    padding: 0 20px;
     background: #ffffff;
     border: 1px solid #c9d8ec;
     box-shadow: 0 2px 8px rgba(17, 44, 88, 0.08);
@@ -2381,6 +2584,10 @@ tbody tr:nth-child(odd) {
 }
 
 /* AJUSTE COMPACTO: QUIENES SOMOS / QUE HACEMOS */
+.quienessomos-page .main-content {
+    justify-content: flex-start;
+}
+
 .quehacemos-page .contenido,
 .quienessomos-page .contenido {
     width: min(92%, 980px);
@@ -2484,7 +2691,49 @@ tbody tr:nth-child(odd) {
     margin-top: 26px;
 }
 .quienessomos-page .institucional-ubicacion {
-    margin-top: 56px;
+    margin-top: 18px;
+}
+
+.institucional-mapa {
+    margin-top: 16px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+.institucional-cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 24px;
+    justify-content: center;
+}
+
+.institucional-cta-btn {
+    display: inline-block;
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 15px;
+    text-decoration: none;
+    background: #1a3c8f;
+    color: white;
+    transition: background 0.2s;
+}
+
+.institucional-cta-btn:hover {
+    background: #142d6e;
+    color: white;
+}
+
+.institucional-cta-btn.secundario {
+    background: white;
+    color: #1a3c8f;
+    border: 2px solid #1a3c8f;
+}
+
+.institucional-cta-btn.secundario:hover {
+    background: #eef3fa;
 }
 
 .quehacemos-page .institucional-actions .btn {

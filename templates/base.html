@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=20260504-1">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=202605131330">
 </head>
 
 <body class="{% block body_class %}{% endblock %}">
@@ -64,6 +64,187 @@
 </div>
 {% endblock %}
 </div>
+
+{% set rutas_publicas = ['/', '/quienes-somos', '/que-hacemos', '/asi-acompanamos', '/voluntariado', '/donaciones'] %}
+{% if request.path in rutas_publicas or request.path.startswith('/asi-acompanamos/foto/') %}
+<button id="chatbot-toggle" class="chatbot-toggle" type="button" aria-label="Abrir asistente">
+    <span class="chatbot-toggle-icon" aria-hidden="true">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="20" height="20" fill="none">
+            <!-- antena -->
+            <line x1="16" y1="2" x2="16" y2="7" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="16" cy="2" r="2" fill="#ffd66b"/>
+            <!-- cabeza -->
+            <rect x="7" y="8" width="18" height="14" rx="4" fill="#fff" opacity="0.95"/>
+            <!-- ojos -->
+            <circle cx="12" cy="14" r="2" fill="#1f5fbf"/>
+            <circle cx="20" cy="14" r="2" fill="#1f5fbf"/>
+            <!-- sonrisa -->
+            <path d="M11 18.5 Q16 21.5 21 18.5" stroke="#1f5fbf" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+            <!-- cuerpito -->
+            <rect x="13" y="22" width="6" height="4" rx="2" fill="#fff" opacity="0.7"/>
+        </svg>
+    </span>
+    <span class="chatbot-toggle-text">Asistente</span>
+</button>
+
+<section id="chatbot-panel" class="chatbot-panel" aria-hidden="true">
+    <div class="chatbot-header">
+        <strong class="chatbot-title">
+            <span class="chatbot-title-icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="20" height="20" fill="none">
+                    <line x1="16" y1="2" x2="16" y2="7" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+                    <circle cx="16" cy="2" r="2" fill="#ffd66b"/>
+                    <rect x="7" y="8" width="18" height="14" rx="4" fill="#fff" opacity="0.95"/>
+                    <circle cx="12" cy="14" r="2" fill="#1f5fbf"/>
+                    <circle cx="20" cy="14" r="2" fill="#1f5fbf"/>
+                    <path d="M11 18.5 Q16 21.5 21 18.5" stroke="#1f5fbf" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+                    <rect x="13" y="22" width="6" height="4" rx="2" fill="#fff" opacity="0.7"/>
+                </svg>
+            </span>
+            <span>Asistente Pekkes</span>
+        </strong>
+        <button id="chatbot-close" type="button" aria-label="Cerrar asistente">x</button>
+    </div>
+    <div id="chatbot-messages" class="chatbot-messages">
+        <div class="chatbot-message bot">
+            Hola. Te ayudo con info rapida. Podes preguntar por donaciones, voluntariado, ubicacion, horarios o contacto.
+        </div>
+    </div>
+    <div class="chatbot-quick-actions">
+        <button type="button" data-msg="Como puedo donar?">Donar</button>
+        <button type="button" data-msg="Quiero ser voluntario">Voluntariado</button>
+        <button type="button" data-msg="Donde estan?">Ubicacion</button>
+        <button type="button" data-msg="Cuales son los horarios?">Horarios</button>
+    </div>
+    <form id="chatbot-form" class="chatbot-form">
+        <input id="chatbot-input" type="text" placeholder="Escribi tu consulta..." autocomplete="off" />
+        <button type="submit">Enviar</button>
+    </form>
+</section>
+
+<script>
+(function () {
+    var toggle = document.getElementById('chatbot-toggle');
+    var panel = document.getElementById('chatbot-panel');
+    var closeBtn = document.getElementById('chatbot-close');
+    var form = document.getElementById('chatbot-form');
+    var input = document.getElementById('chatbot-input');
+    var messages = document.getElementById('chatbot-messages');
+    var quickActions = document.querySelectorAll('.chatbot-quick-actions button');
+
+    if (!toggle || !panel || !form || !input || !messages) {
+        return;
+    }
+
+    function addMessage(text, who) {
+        var node = document.createElement('div');
+        node.className = 'chatbot-message ' + who;
+        node.textContent = text;
+        messages.appendChild(node);
+        messages.scrollTop = messages.scrollHeight;
+    }
+
+    function normalizeText(text) {
+        return (text || '')
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^a-z0-9\s]/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim();
+    }
+
+    function hasAny(msg, words) {
+        return words.some(function (word) {
+            return msg.indexOf(word) !== -1;
+        });
+    }
+
+    function getReply(text) {
+        var msg = normalizeText(text);
+
+        var intents = [
+            {
+                match: function () {
+                    return hasAny(msg, ['donar', 'donacion', 'donaciones', 'aporte', 'aportar', 'comprobante', 'transferencia', 'cbu', 'alias']);
+                },
+                reply: 'Podes donar en la seccion Donaciones. Si la donacion es dinero, adjunta el comprobante para registrarla correctamente.'
+            },
+            {
+                match: function () {
+                    return hasAny(msg, ['voluntario', 'voluntariado', 'ayudar', 'sumarme', 'sumar']);
+                },
+                reply: 'Para participar, entra en Voluntariado y completa el formulario. El equipo se contacta con vos.'
+            },
+            {
+                match: function () {
+                    return hasAny(msg, ['ubicacion', 'donde', 'direccion', 'mapa', 'lugar']);
+                },
+                reply: 'Estamos en Capilla San Cayetano, J. Cesar 4176, Barrio El Quebracho, Cordoba. En Quienes Somos tenes el boton de Google Maps.'
+            },
+            {
+                match: function () {
+                    return hasAny(msg, ['horario', 'horarios', 'cuando', 'dias', 'sabado', 'sabados']);
+                },
+                reply: 'La actividad de almuerzo solidario se realiza los sabados. Para horarios exactos, escribinos por Instagram.'
+            },
+            {
+                match: function () {
+                    return hasAny(msg, ['contacto', 'instagram', 'redes', 'telefono', 'mail', 'correo']);
+                },
+                reply: 'Podes contactarnos por Instagram en @misionlospekkes o desde los formularios de Donaciones y Voluntariado.'
+            }
+        ];
+
+        for (var i = 0; i < intents.length; i += 1) {
+            if (intents[i].match()) {
+                return intents[i].reply;
+            }
+        }
+
+        return 'Puedo responder sobre: Donaciones, Voluntariado, Ubicacion, Horarios y Contacto. Elegi una opcion rapida o escribi uno de esos temas.';
+    }
+
+    function handleUserMessage(text) {
+        var clean = (text || '').trim();
+        if (!clean) {
+            return;
+        }
+        addMessage(clean, 'user');
+        addMessage(getReply(clean), 'bot');
+    }
+
+    toggle.addEventListener('click', function () {
+        panel.classList.toggle('open');
+        panel.setAttribute('aria-hidden', panel.classList.contains('open') ? 'false' : 'true');
+        if (panel.classList.contains('open')) {
+            input.focus();
+        }
+    });
+
+    if (closeBtn) {
+        closeBtn.addEventListener('click', function () {
+            panel.classList.remove('open');
+            panel.setAttribute('aria-hidden', 'true');
+        });
+    }
+
+    form.addEventListener('submit', function (event) {
+        event.preventDefault();
+        var text = input.value;
+        handleUserMessage(text);
+        input.value = '';
+        input.focus();
+    });
+
+    quickActions.forEach(function (button) {
+        button.addEventListener('click', function () {
+            handleUserMessage(button.getAttribute('data-msg') || '');
+        });
+    });
+})();
+</script>
+{% endif %}
 
 <footer class="site-footer">
     <p>&copy; 2026 Misión Los Pekkes. Todos los derechos reservados.</p>
